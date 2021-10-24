@@ -19,6 +19,17 @@ class Udp:
         self.length = 0
         self.data = data
         self.is_valid = True
+        self.data_max_length = 65507
+
+    def set_data(self, data: str):
+        """ Sets data of Udp segment. """
+        if data is None:
+            raise TypeError(f"Data must not be None!")
+        elif type(data) != str:
+            raise TypeError(f"Data must be of type str!")
+        elif len(data) > self.data_max_length:
+            raise ValueError(f"Data must not be more than {self.data_max_length} characters!")
+        self.data = data
 
     def get_length(self) -> int:
         """ Returns size of UDP segment in bytes. """
