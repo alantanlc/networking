@@ -13,7 +13,7 @@ class Udp:
     data: maximum of 65,507 bytes
     """
 
-    DATA_MAX_LENGTH = 65508
+    DATA_MAX_LENGTH = 65507
     ENCODING = 'utf-8'
 
     def __init__(self, source_port: int, destination_port: int, data: str):
@@ -25,7 +25,7 @@ class Udp:
         self.set_data(data)
 
     def set_data(self, data: str):
-        """ Sets data of Udp segment. """
+        """ Sets data of UDP segment. """
         if data is None:
             raise TypeError(f"Data must not be None!")
         elif type(data) != str:
@@ -81,7 +81,7 @@ class Udp:
         return s
 
     def deserialize(self, b = bytearray):
-        """ Update member variables from given bytearray. """
+        """ Deserializes bytearray and updates member variables """
         self.source_port = int.from_bytes(b[0:2], 'big')
         self.destination_port = int.from_bytes(b[2:4], 'big')
         self.length = int.from_bytes(b[4:6],'big')
