@@ -17,9 +17,9 @@ class Udp:
         self.destination_port = destination_port
         self.checksum = 0
         self.length = 0
-        self.data = data
-        self.is_valid = True
         self.data_max_length = 65507
+        self.is_valid = True
+        self.set_data(data)
 
     def set_data(self, data: str):
         """ Sets data of Udp segment. """
