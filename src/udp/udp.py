@@ -20,9 +20,6 @@ class Udp:
         self.data = data
         self.is_valid = True
 
-    def __init__(self, ba = bytearray):
-        self.deserialize(ba)
-
     def get_length(self) -> int:
         """ Returns size of UDP segment in bytes. """
         return 64 + len(self.data)
@@ -37,15 +34,15 @@ class Udp:
     def get_bitarray(self) -> bitarray:
         """ Returns bitarray of UDP segment. """
         arr = bitarray()
-        arr.append(int2ba(self.source_port, 16))
-        arr.append(int2ba(self.destination_port, 16))
-        arr.append(int2ba(self.get_length(), 16))
-        arr.append(int2ba(self.get_checksum, 16))
+        arr += int2ba(self.source_port, 16)
+        arr += int2ba(self.destination_port, 16)
+        arr += int2ba(self.get_length(), 16)
+        arr += int2ba(self.get_checksum(), 16)
 
         # Convert data from string to byte array and then to bit array
         data_ba = bitarray()
         data_ba.frombytes(self.data.encode('utf-8'))
-        arr.append(data_ba)
+        arr += data_ba
 
         return arr
 
