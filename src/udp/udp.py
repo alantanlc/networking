@@ -18,6 +18,7 @@ class Udp:
         self.checksum = 0
         self.length = 0
         self.data = data
+        self.is_valid = True
 
     def __init__(self, ba = bytearray):
         self.deserialize(ba)
@@ -29,6 +30,9 @@ class Udp:
     def get_checksum(self) -> int:
         """ Returns checksum of UDP segment. """
         return 0
+
+    def is_checksum_valid(self) -> bool:
+        return self.checksum == self.get_checksum()
 
     def get_bitarray(self) -> bitarray:
         """ Returns bitarray of UDP segment. """
@@ -59,8 +63,7 @@ class Udp:
         self.source_port = b[0:2]
         self.destination_port = b[2:4]
         self.length = b[4:6]
-        self.checksum = b[6:8]
+        self.checksum = b[6:8] # need to validate if checksum is correct
         self.data = b[8:]
-
-
+        self.is_valid = self.is_checksum_valid()
 
