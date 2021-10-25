@@ -1,6 +1,5 @@
 from bitarray import bitarray
 from bitarray.util import int2ba
-import pdb
 
 class Udp:
     """
@@ -15,13 +14,15 @@ class Udp:
 
     DATA_MAX_LENGTH = 65507
     ENCODING = 'utf-8'
+    ZERO_BYTE = b'\x00'
+    ENDIAN = 'big'
 
     def __init__(self, source_port: int, destination_port: int, data: str):
         self.source_port = source_port
         self.destination_port = destination_port
         self.checksum = 0
         self.length = 0
-        self.is_valid = True
+        self.is_valid = False
         self.set_data(data)
 
     def set_data(self, data: str):
@@ -46,7 +47,7 @@ class Udp:
         
         # Add one more byte if data length is odd
         if len(s) % 2 != 0:
-            s += b'\x00'
+            s += self.ZERO_BYTE
         # print(s, len(s))
 
         return 1
@@ -73,19 +74,20 @@ class Udp:
         """ Returns byte array of UDP segment. """
         s = bytearray()
         checksum = 0 if use_checksum_zero else self.get_checksum()
+        self.checksum = self.checksum if use_checksum_zero else checksum
         header = [self.source_port, self.destination_port, self.get_length(), checksum]
         for h in header:
-            s += h.to_bytes(2, 'big')
+            s += h.to_bytes(2, self.ENDIAN)
         s += bytearray(self.data.encode(self.ENCODING))
 
         return s
 
     def deserialize(self, b = bytearray):
         """ Deserializes bytearray and updates member variables """
-        self.source_port = int.from_bytes(b[0:2], 'big')
-        self.destination_port = int.from_bytes(b[2:4], 'big')
-        self.length = int.from_bytes(b[4:6],'big')
-        self.checksum = int.from_bytes(b[6:8], 'big')
+        self.source_port = int.from_bytes(b[0:2], self.ENDIAN)
+        self.destination_port = int.from_bytes(b[2:4], self.ENDIAN)
+        self.length = int.from_bytes(b[4:6], self.ENDIAN)
+        self.checksum = int.from_bytes(b[6:8], self.ENDIAN)
         self.data = b[8:].decode(self.ENCODING)
         self.is_valid = self.is_checksum_valid()
 
